@@ -1,5 +1,5 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
+from typing import Dict
 
 class Settings(BaseSettings):
     BOT_TOKEN: str
@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     DB_PORT: str
     DB_NAME: str
 
-    CLASS_TYPES = {
+    CLASS_TYPES: Dict[int, str] = {
         3: "Русский язык",
         40: "Алгебра",
         1: "Математика",
