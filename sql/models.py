@@ -11,6 +11,7 @@ students = Table(
     Column("student_id", Integer, primary_key=True, autoincrement=True),
     Column("telegram_id", Integer, primary_key=True),
     Column("student_name", String(255), nullable=False),
+    Column("student_surname", String(255), nullable=False),
     UniqueConstraint("student_id", name="uix_student_id"),
 )
 

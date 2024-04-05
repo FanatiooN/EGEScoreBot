@@ -2,25 +2,32 @@ from sql.database import engine
 from sql.models import metadata, students, subjects, student_subject
 from sqlalchemy import insert, select, delete
 from loguru import logger
+from config import settings
 
 
-def create_tables():
+def create_tables() -> None:
     try:
         metadata.drop_all(engine, checkfirst=True)
         logger.info("create_tables: delete tables")
         metadata.create_all(engine)
         logger.info("create_tables: create tables")
 
+        for subject_id, subject_name in settings.CLASS_TYPES.items():
+            insert_subject(subject_id, subject_name)
     except Exception as e:
         logger.error(f"{e}")
 
 
-def insert_student(telegram_id: int, name: str):
+def insert_student(telegram_id: int, name: str, surname: str) -> None:
     try:
         with engine.connect() as conn:
             statement = insert(students).values(
                 [
-                    {"telegram_id": telegram_id, "student_name": name},
+                    {
+                        "telegram_id": telegram_id,
+                        "student_name": name,
+                        "student_surname": surname,
+                    },
                 ]
             )
             conn.execute(statement)
@@ -30,7 +37,7 @@ def insert_student(telegram_id: int, name: str):
         logger.error(f"{e}")
 
 
-def insert_subject(subject_id: int, subject_name: str):
+def insert_subject(subject_id: int, subject_name: str) -> None:
     try:
         with engine.connect() as conn:
             statement = insert(subjects).values(
@@ -45,7 +52,7 @@ def insert_subject(subject_id: int, subject_name: str):
         logger.error(f"{e}")
 
 
-def insert_scores(student_id: int, scores: list[tuple[int, int]]):
+def insert_scores(student_id: int, scores: list[tuple[int, int]]) -> None:
     try:
         with engine.connect() as conn:
             statement = insert(student_subject).values(
@@ -65,7 +72,7 @@ def insert_scores(student_id: int, scores: list[tuple[int, int]]):
         logger.error(f"{e}")
 
 
-def get_student_id(telegram_id: int):
+def get_student_id(telegram_id: int) -> None:
     try:
         with engine.connect() as conn:
             query = select(students.c.student_id).where(
@@ -82,35 +89,34 @@ def get_student_id(telegram_id: int):
         logger.error(f"{e}")
 
 
-def get_scores(student_id: int):
+def get_scores(student_id: int) -> list[int, int, int]:
     try:
         with engine.connect() as conn:
             query = select(student_subject).where(
                 student_subject.c.student_id == student_id
             )
-
             result = conn.execute(query)
-
             scores = result.fetchall()
-
             return scores
 
     except Exception as e:
         logger.error(f"{e}")
 
 
-def delete_student(student_id: int):
+def delete_student(student_id: int) -> None:
     try:
         with engine.connect() as conn:
+            delete_scores(student_id)
             query = delete(students).where(students.c.student_id == student_id)
 
             conn.execute(query)
+            conn.commit()
 
     except Exception as e:
         logger.error(f"{e}")
 
 
-def delete_scores(student_id: int):
+def delete_scores(student_id: int) -> None:
     try:
         with engine.connect() as conn:
             query = delete(student_subject).where(
@@ -118,6 +124,7 @@ def delete_scores(student_id: int):
             )
 
             conn.execute(query)
+            conn.commit()
 
     except Exception as e:
         logger.error(f"{e}")
