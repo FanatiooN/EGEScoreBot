@@ -2,8 +2,8 @@ version: '3.8'
 
 services:
   egescorebot:
-    # image: fanatioon/egescorebot
-    build: .
+    image: fanatioon/egescorebot
+    # build: .
     ports:
       - "8000:8000"
     volumes:
