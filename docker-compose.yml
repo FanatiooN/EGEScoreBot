@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  egescorebot:
+    # image: fanatioon/egescorebot
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./logs:/app/logs
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASS}@db:5432/${DB_NAME}
+
+  db:
+    image: postgres:latest
+    restart: on-failure
+    ports: 
+    - "5432"
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_NAME}
+
+# volumes:
+#   postgres_data:
+  
