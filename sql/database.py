@@ -1,5 +1,4 @@
 from sqlalchemy import create_engine
-from sql.models import metadata
 
 from config import settings
 

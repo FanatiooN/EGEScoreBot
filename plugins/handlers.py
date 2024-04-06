@@ -1,5 +1,4 @@
 import re
-from typing import Any, Dict
 
 from plugins.FSM import States
 from config import settings
@@ -13,6 +12,7 @@ from sql.core import (
     get_scores,
     delete_scores,
     insert_scores,
+    export_to_csv,
 )
 
 user_states = {}
@@ -100,6 +100,18 @@ async def enter_scores(client: Client, message: Message) -> None:
 
     except Exception as e:
         logger.error(f"{e}")
+
+
+@Client.on_message(filters.command("export") & filters.private)
+async def export_data(client: Client, message: Message) -> None:
+    try:
+        logger.info("start")
+        export_to_csv()
+
+        await message.reply_document("scores.csv")
+
+    except Exception as e:
+        await message.reply(f"{e}")
 
 
 @Client.on_message(filters.private)

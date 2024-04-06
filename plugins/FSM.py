@@ -7,5 +7,3 @@ class States(Enum):
     ENTER_SUBJECT_COUNT = 3
     SELECT_SUBJECT = 4
     ENTER_SCORES = 5
-
-
