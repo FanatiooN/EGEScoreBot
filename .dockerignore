@@ -17,3 +17,4 @@ docker-compose.yml
 Thumbs.db
 .vscode/
 .idea/
+sessions/
